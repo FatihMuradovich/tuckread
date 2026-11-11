@@ -1,0 +1,104 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { Suspense } from "react";
+import { AppHeader } from "@/components/AppHeader";
+import { requireUser } from "@/lib/auth";
+import { sanitizeArticleHtml } from "@/lib/articles/sanitize";
+import { deleteArticle, setArchived } from "@/app/library/actions";
+
+export const metadata: Metadata = { title: "Reading · Tuckread" };
+
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+export default function ReadPage({ params }: PageProps<"/read/[id]">) {
+  return (
+    <>
+      <AppHeader />
+      <main className="mx-auto w-full max-w-3xl px-4 py-8 sm:px-6">
+        <Suspense fallback={<ReaderSkeleton />}>
+          <Reader params={params} />
+        </Suspense>
+      </main>
+    </>
+  );
+}
+
+async function Reader({ params }: Pick<PageProps<"/read/[id]">, "params">) {
+  const { id } = await params;
+  if (!UUID.test(id)) notFound();
+
+  const { supabase } = await requireUser();
+  const { data: article } = await supabase
+    .from("articles")
+    .select("id, url, title, site_name, byline, reading_minutes, content_html, status")
+    .eq("id", id)
+    .maybeSingle();
+
+  if (!article) notFound();
+
+  const archived = article.status === "archived";
+  // Stored HTML was sanitized when saved; sanitize again in case a row was written another way.
+  const html = article.content_html ? sanitizeArticleHtml(article.content_html) : null;
+
+  return (
+    <article className="grid gap-8">
+      <Link href="/library" className="text-sm text-muted hover:text-ink">
+        ← Library
+      </Link>
+
+      <header className="grid gap-3">
+        <h1 className="font-read text-3xl leading-tight font-semibold sm:text-4xl">{article.title}</h1>
+        <p className="flex flex-wrap gap-x-3 gap-y-1 text-sm text-muted">
+          {article.byline && <span>{article.byline}</span>}
+          {article.site_name && <span>{article.site_name}</span>}
+          {html && <span>{article.reading_minutes} min read</span>}
+          <a href={article.url} target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-ink">
+            Open original
+          </a>
+        </p>
+      </header>
+
+      {html ? (
+        <div className="reader" dangerouslySetInnerHTML={{ __html: html }} suppressHydrationWarning />
+      ) : (
+        <div className="grid justify-items-start gap-4 rounded-2xl border border-line bg-surface p-6">
+          <p className="text-muted">
+            This site doesn&apos;t let reading apps fetch its text, so Tuckread kept the link for you.
+          </p>
+          <a
+            href={article.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="rounded-full bg-primary px-5 py-2.5 font-semibold text-on-primary hover:opacity-90"
+          >
+            Read on {article.site_name ?? "the original site"}
+          </a>
+        </div>
+      )}
+
+      <footer className="flex flex-wrap gap-3 border-t border-line pt-6">
+        <form action={setArchived.bind(null, article.id, !archived)}>
+          <button className="rounded-full bg-primary px-5 py-2.5 font-semibold text-on-primary hover:opacity-90">
+            {archived ? "Move back to library" : "Done reading · Archive"}
+          </button>
+        </form>
+        <form action={deleteArticle.bind(null, article.id)}>
+          <button className="rounded-full border border-line px-5 py-2.5 font-semibold text-muted hover:border-red-500 hover:text-red-600">
+            Delete
+          </button>
+        </form>
+      </footer>
+    </article>
+  );
+}
+
+function ReaderSkeleton() {
+  return (
+    <div className="grid gap-4" aria-hidden="true">
+      <div className="h-10 w-3/4 rounded-lg bg-line" />
+      <div className="h-4 w-1/3 rounded bg-line" />
+      <div className="mt-6 h-96 rounded-2xl bg-surface" />
+    </div>
+  );
+}

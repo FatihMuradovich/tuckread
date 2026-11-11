@@ -1,26 +1,103 @@
 @import "tailwindcss";
 
+/* Tuckread brand tokens: Yosun ve Kadife Çiçeği (see brand/tokens.css) */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --tr-bg: #f1f3ee; /* paper */
+  --tr-surface: #ffffff;
+  --tr-ink: #18221c;
+  --tr-muted: #5f6e64;
+  --tr-line: rgba(24, 34, 28, 0.1);
+  --tr-primary: #2e4a3b; /* moss */
+  --tr-on-primary: #f1f3ee;
+  --tr-accent: #e8a33d; /* marigold */
+  --tr-highlight: rgba(232, 163, 61, 0.38);
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  :root:not([data-theme="light"]) {
+    --tr-bg: #121814;
+    --tr-surface: #1c2620;
+    --tr-ink: #e4eae4;
+    --tr-muted: #8a998f;
+    --tr-line: rgba(228, 234, 228, 0.1);
+    --tr-primary: #9cc5ae;
+    --tr-on-primary: #121814;
+    color-scheme: dark;
   }
 }
 
+:root[data-theme="dark"] {
+  --tr-bg: #121814;
+  --tr-surface: #1c2620;
+  --tr-ink: #e4eae4;
+  --tr-muted: #8a998f;
+  --tr-line: rgba(228, 234, 228, 0.1);
+  --tr-primary: #9cc5ae;
+  --tr-on-primary: #121814;
+  color-scheme: dark;
+}
+
+@theme inline {
+  --color-bg: var(--tr-bg);
+  --color-surface: var(--tr-surface);
+  --color-ink: var(--tr-ink);
+  --color-muted: var(--tr-muted);
+  --color-line: var(--tr-line);
+  --color-primary: var(--tr-primary);
+  --color-on-primary: var(--tr-on-primary);
+  --color-accent: var(--tr-accent);
+  --color-highlight: var(--tr-highlight);
+  --color-moss: #2e4a3b;
+  --color-paper: #f1f3ee;
+
+  --font-display: var(--font-bricolage), "Avenir Next", system-ui, sans-serif;
+  --font-sans: var(--font-figtree), system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-read: var(--font-literata), Georgia, "Times New Roman", serif;
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--tr-bg);
+  color: var(--tr-ink);
+}
+
+h1,
+h2,
+h3 {
+  text-wrap: balance;
+}
+
+/* Reading view: typography for saved article content */
+.reader {
+  font-family: var(--font-literata), Georgia, "Times New Roman", serif;
+  font-size: 1.125rem;
+  line-height: 1.75;
+  max-width: 65ch;
+  overflow-wrap: break-word;
+}
+.reader > * + * { margin-top: 1.1em; }
+.reader h2, .reader h3, .reader h4, .reader h5, .reader h6 {
+  font-family: var(--font-bricolage), "Avenir Next", system-ui, sans-serif;
+  font-weight: 700;
+  line-height: 1.25;
+  margin-top: 1.8em;
+}
+.reader h2 { font-size: 1.5rem; }
+.reader h3 { font-size: 1.25rem; }
+.reader a { color: var(--tr-primary); text-decoration: underline; text-underline-offset: 2px; }
+.reader ul { list-style: disc; padding-left: 1.4em; }
+.reader ol { list-style: decimal; padding-left: 1.4em; }
+.reader li + li { margin-top: 0.35em; }
+.reader blockquote { border-left: 3px solid var(--tr-accent); padding-left: 1em; color: var(--tr-muted); font-style: italic; }
+.reader img { max-width: 100%; height: auto; border-radius: 0.75rem; }
+.reader figcaption { font-family: var(--font-figtree), system-ui, sans-serif; font-size: 0.85rem; color: var(--tr-muted); margin-top: 0.5em; }
+.reader pre { overflow-x: auto; background: var(--tr-surface); border-radius: 0.75rem; padding: 1em; font-size: 0.9rem; }
+.reader code { font-size: 0.9em; }
+.reader table { display: block; overflow-x: auto; border-collapse: collapse; font-family: var(--font-figtree), system-ui, sans-serif; font-size: 0.95rem; }
+.reader th, .reader td { border: 1px solid var(--tr-line); padding: 0.4em 0.7em; }
+.reader hr { border: 0; border-top: 1px solid var(--tr-line); }
+.reader mark { background: var(--tr-highlight); color: inherit; }
+
+:focus-visible {
+  outline: 2px solid var(--tr-primary);
+  outline-offset: 3px;
 }

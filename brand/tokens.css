@@ -1,0 +1,43 @@
+/* Tuckread brand tokens — Yosun ve Kadife Çiçeği
+   Fonts (Google Fonts): Bricolage Grotesque (logo, headings), Figtree (UI), Literata (reading view) */
+
+:root {
+  /* brand */
+  --tr-moss: #2E4A3B;      /* primary: buttons, wordmark "read", links */
+  --tr-marigold: #E8A33D;  /* accent: ribbon, unread dot, highlights */
+
+  /* light theme */
+  --tr-bg: #F1F3EE;        /* paper */
+  --tr-surface: #FFFFFF;
+  --tr-ink: #18221C;       /* text */
+  --tr-muted: #6B7A70;     /* secondary text */
+  --tr-primary: var(--tr-moss);
+  --tr-on-primary: #F1F3EE;
+  --tr-highlight: rgba(232, 163, 61, 0.38);
+
+  --tr-font-display: "Bricolage Grotesque", "Avenir Next", system-ui, sans-serif;
+  --tr-font-ui: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --tr-font-read: "Literata", Georgia, "Times New Roman", serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --tr-bg: #121814;
+    --tr-surface: #1C2620;
+    --tr-ink: #E4EAE4;
+    --tr-muted: #8A998F;
+    --tr-primary: #9CC5AE;
+    --tr-on-primary: #121814;
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme="dark"] {
+  --tr-bg: #121814;
+  --tr-surface: #1C2620;
+  --tr-ink: #E4EAE4;
+  --tr-muted: #8A998F;
+  --tr-primary: #9CC5AE;
+  --tr-on-primary: #121814;
+  color-scheme: dark;
+}
