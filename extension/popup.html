@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Tuckread</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <header>
+      <img src="icons/icon-32.png" alt="" width="24" height="24" />
+      <span class="wordmark"><span class="t">tuck</span><span class="r">read</span></span>
+    </header>
+
+    <main id="card" data-state="saving" aria-live="polite">
+      <p id="page-title" class="page-title">This page</p>
+      <p id="status" class="status">
+        <span class="spinner" aria-hidden="true"></span>
+        <span id="status-text">Tucking it away…</span>
+      </p>
+      <p id="detail" class="detail" hidden></p>
+      <a id="primary" class="button" href="#" target="_blank" rel="noopener" hidden></a>
+    </main>
+
+    <footer>
+      <a id="library-link" href="#" target="_blank" rel="noopener">Open library</a>
+      <span class="shortcut" title="Keyboard shortcut">⌥⇧S</span>
+    </footer>
+
+    <script type="module" src="popup.js"></script>
+  </body>
+</html>

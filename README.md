@@ -33,6 +33,9 @@ respects the reader: no ads, no tracking, and an export button that is always th
 
 **Working today**
 
+- **One-click browser extension.** Click the Tuckread button (or press <kbd>⌥</kbd><kbd>⇧</kbd><kbd>S</kbd>) and the page
+  is saved exactly as you see it, so it works on sites that block servers, such as Medium.
+  Links you saved earlier without their text get it filled in.
 - **Save by link.** Paste a URL and Tuckread fetches the page, pulls out the article with
   [Mozilla Readability](https://github.com/mozilla/readability) (the engine behind Firefox Reader View),
   and estimates the reading time.
@@ -44,7 +47,8 @@ respects the reader: no ads, no tracking, and an export button that is always th
 
 **On the roadmap**
 
-- [ ] Browser extension that saves the page as you see it, including sites that block servers
+- [x] Browser extension that saves the page as you see it, including sites that block servers
+- [ ] Publish the extension to the Chrome Web Store
 - [ ] Import from Pocket and Instapaper export files
 - [ ] Export your whole library as Markdown or JSON
 - [ ] Three-sentence AI summaries
@@ -73,7 +77,11 @@ respects the reader: no ads, no tracking, and an export button that is always th
 - **Session handling.** `src/proxy.ts` refreshes the Supabase session on every request and keeps signed-out
   visitors out of `/library` and `/read`. Server code verifies the user with `getUser()` before touching data.
 - **Respecting site rules.** When a site blocks automated readers, Tuckread does not try to disguise itself;
-  it saves the link instead.
+  it saves the link instead. The extension captures the page from the reader's own tab, which is the page they
+  are already allowed to see.
+- **Extension endpoint.** `POST /api/save` authenticates with the Tuckread session cookie and only accepts
+  requests whose `Origin` is the app itself or a browser extension, so ordinary websites can't trigger saves.
+  The extension asks only for `activeTab` and `scripting`: it can read a page only when you click its button.
 
 ## Getting started
 
@@ -114,6 +122,17 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000), create an account, confirm your email, and save your first article.
 
+### 4. Load the browser extension (Chrome, Edge, Brave, Arc)
+
+1. Go to `chrome://extensions` and turn on **Developer mode** (top right).
+2. Click **Load unpacked** and select the [`extension/`](extension) folder.
+3. Pin Tuckread from the puzzle-piece menu so its button stays in the toolbar.
+4. Sign in to Tuckread at `http://localhost:3000` in the same browser, open any article, and click the button.
+
+The extension talks to `http://localhost:3000`. When you deploy, change `TUCKREAD_URL` in
+[`extension/config.js`](extension/config.js) and `host_permissions` in
+[`extension/manifest.json`](extension/manifest.json) to your domain.
+
 ## Project structure
 
 ```text
@@ -123,14 +142,16 @@ src/
 │   ├── login/                Sign in and sign up (Server Action + useActionState)
 │   ├── auth/callback/        Email confirmation handler
 │   ├── auth/signout/         Sign out
+│   ├── api/save/             Save endpoint used by the browser extension
 │   ├── library/              Library list, save form and article actions
 │   └── read/[id]/            Reading view
 ├── components/               Logo and app header
 ├── lib/
-│   ├── articles/             Fetching, parsing and sanitizing articles
+│   ├── articles/             Fetching, parsing, sanitizing and saving articles
 │   ├── supabase/             Browser, server and proxy clients
 │   └── auth.ts               requireUser() helper used by every private page and action
 └── proxy.ts                  Session refresh and route protection
+extension/                    Chrome extension (Manifest V3): popup, icons, config
 supabase/migrations/          Database schema and RLS policies
 brand/                        Logo, favicon, color tokens and brand board
 ```

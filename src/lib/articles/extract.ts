@@ -64,12 +64,22 @@ export function parseUserUrl(raw: string): URL {
     throw new SaveError("That doesn't look like a link. Check it and try again.");
   }
   url.hash = "";
+  // Drop campaign tracking so the same article isn't saved twice under different links.
+  for (const key of [...url.searchParams.keys()]) {
+    if (/^(utm_|fbclid$|gclid$|mc_cid$|mc_eid$)/i.test(key)) url.searchParams.delete(key);
+  }
   return url;
 }
 
+/** Fetches a page from our server and extracts the article. */
 export async function extractArticle(url: URL): Promise<ExtractedArticle> {
   const { html, finalUrl } = await fetchHtml(url);
+  return parseArticleHtml(html, finalUrl);
+}
 
+/** Extracts the article from HTML we already have, e.g. a page captured by the browser extension. */
+export function parseArticleHtml(html: string, pageUrl: URL): ExtractedArticle {
+  const finalUrl = pageUrl;
   const virtualConsole = new VirtualConsole(); // swallow CSS and script noise from the page
   const dom = new JSDOM(html, { url: finalUrl.toString(), virtualConsole });
   const doc = dom.window.document;
