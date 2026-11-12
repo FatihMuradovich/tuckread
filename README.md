@@ -43,7 +43,14 @@ respects the reader: no ads, no tracking, and an export button that is always th
 - **Save by link.** Paste a URL and Tuckread fetches the page, pulls out the article with
   [Mozilla Readability](https://github.com/mozilla/readability) (the engine behind Firefox Reader View),
   and estimates the reading time.
-- **Clean reading view.** Typeset in Literata, a face designed for long-form reading on screens, in light or dark.
+- **Clean reading view.** Typeset in Literata, a face designed for long-form reading on screens.
+  Choose light, sepia or dark, four text sizes and three line widths; settings apply before the page paints, so nothing flashes.
+- **Highlights and notes.** Select any passage to highlight it or add a note. Highlights are anchored by the quote
+  plus surrounding text, so they redraw in the right place even when the same words appear twice. All of them
+  are collected on one Highlights page.
+- **Pick up where you left off.** A progress bar tracks how far you've read; reopening an article jumps back to
+  that spot, and articles you finish are marked as read.
+- **Tags and search.** Tag articles and filter by tag. Full-text search covers titles, sites and the article text.
 - **Library and archive.** Unread articles up top; archive them when you are done, or delete them.
 - **Graceful fallback.** Sites that block reading apps (Medium, for example) are saved as link-only
   bookmarks with a title derived from the URL, instead of failing.
@@ -56,8 +63,8 @@ respects the reader: no ads, no tracking, and an export button that is always th
 - [ ] Import from Pocket and Instapaper export files
 - [ ] Export your whole library as Markdown or JSON
 - [ ] Three-sentence AI summaries
-- [ ] Highlights and notes in the reading view
-- [ ] Tags and search
+- [x] Highlights and notes in the reading view
+- [x] Tags and search
 
 ## How it is built
 
@@ -105,9 +112,8 @@ npm install
 
 ### 2. Set up Supabase
 
-1. In the Supabase dashboard, open **SQL Editor**, paste the contents of
-   [`supabase/migrations/20261111120000_initial_schema.sql`](supabase/migrations/20261111120000_initial_schema.sql)
-   and run it.
+1. In the Supabase dashboard, open **SQL Editor** and run each file in
+   [`supabase/migrations`](supabase/migrations) in order (oldest first).
 2. Under **Authentication → URL Configuration**, set the Site URL to `http://localhost:3000` and add
    `http://localhost:3000/**` to the Redirect URLs.
 3. Copy the environment template and fill in your project URL and **publishable** key
@@ -149,11 +155,14 @@ src/
 │   ├── auth/callback/        Email confirmation handler
 │   ├── auth/signout/         Sign out
 │   ├── api/save/             Save endpoint used by the browser extension
-│   ├── library/              Library list, save form and article actions
-│   └── read/[id]/            Reading view
+│   ├── library/              Library list with search and tag filters, save form, article actions
+│   ├── highlights/           All highlights, grouped by article
+│   └── read/                 Reading view and its actions (progress, highlights, tags)
+├── components/reader/        Reader settings, progress bar, highlighter, tag editor
 ├── components/               Logo and app header
 ├── lib/
 │   ├── articles/             Fetching, parsing, sanitizing and saving articles
+│   ├── highlights/anchor.ts  Finding a highlight's text again (quote + context matching)
 │   ├── supabase/             Browser, server and proxy clients
 │   └── auth.ts               requireUser() helper used by every private page and action
 └── proxy.ts                  Session refresh and route protection

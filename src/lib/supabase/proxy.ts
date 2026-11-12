@@ -2,7 +2,7 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { supabaseEnv } from "./env";
 
-const PROTECTED_PREFIXES = ["/library", "/read"];
+const PROTECTED_PREFIXES = ["/library", "/read", "/highlights"];
 
 /**
  * Runs before every page: refreshes the user's auth session, writes updated cookies back,

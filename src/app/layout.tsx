@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Bricolage_Grotesque, Figtree, Literata } from "next/font/google";
+import { PREFS_SCRIPT } from "@/lib/reader-prefs";
 import "./globals.css";
 
 const bricolage = Bricolage_Grotesque({
@@ -30,7 +31,12 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html
       lang="en"
       className={`${bricolage.variable} ${figtree.variable} ${literata.variable} h-full antialiased`}
+      // The inline script below sets theme and reader-size attributes before React hydrates.
+      suppressHydrationWarning
     >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: PREFS_SCRIPT }} />
+      </head>
       {/* Browser extensions often add attributes to <body>; don't treat that as a hydration error. */}
       <body className="min-h-full flex flex-col font-sans" suppressHydrationWarning>
         {children}

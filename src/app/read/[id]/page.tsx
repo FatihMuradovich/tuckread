@@ -3,13 +3,28 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { AppHeader } from "@/components/AppHeader";
+import { Highlighter } from "@/components/reader/Highlighter";
+import { ReaderSettings } from "@/components/reader/ReaderSettings";
+import { ReadingProgress } from "@/components/reader/ReadingProgress";
+import { TagEditor } from "@/components/reader/TagEditor";
 import { requireUser } from "@/lib/auth";
 import { sanitizeArticleHtml } from "@/lib/articles/sanitize";
 import { deleteArticle, setArchived } from "@/app/library/actions";
+import {
+  addTag,
+  createHighlight,
+  deleteHighlight,
+  removeTag,
+  saveProgress,
+  updateHighlightNote,
+  type Highlight,
+  type Tag,
+} from "@/app/read/actions";
 
 export const metadata: Metadata = { title: "Reading · Tuckread" };
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const BODY_ID = "article-body";
 
 export default function ReadPage({ params }: PageProps<"/read/[id]">) {
   return (
@@ -29,23 +44,35 @@ async function Reader({ params }: Pick<PageProps<"/read/[id]">, "params">) {
   if (!UUID.test(id)) notFound();
 
   const { supabase } = await requireUser();
-  const { data: article } = await supabase
-    .from("articles")
-    .select("id, url, title, site_name, byline, reading_minutes, content_html, status")
-    .eq("id", id)
-    .maybeSingle();
+  const [{ data: article }, { data: highlights }, { data: allTags }] = await Promise.all([
+    supabase
+      .from("articles")
+      .select("id, url, title, site_name, byline, reading_minutes, content_html, status, progress, tags(id, name)")
+      .eq("id", id)
+      .maybeSingle(),
+    supabase
+      .from("highlights")
+      .select("id, quote, prefix, suffix, note")
+      .eq("article_id", id)
+      .order("created_at"),
+    supabase.from("tags").select("name").order("name"),
+  ]);
 
   if (!article) notFound();
 
   const archived = article.status === "archived";
   // Stored HTML was sanitized when saved; sanitize again in case a row was written another way.
   const html = article.content_html ? sanitizeArticleHtml(article.content_html) : null;
+  const tags = (article.tags ?? []) as Tag[];
 
   return (
     <article className="grid gap-8">
-      <Link href="/library" className="text-sm text-muted hover:text-ink">
-        ← Library
-      </Link>
+      <div className="flex items-center justify-between gap-3">
+        <Link href="/library" className="text-sm text-muted hover:text-ink">
+          ← Library
+        </Link>
+        {html && <ReaderSettings />}
+      </div>
 
       <header className="grid gap-3">
         <h1 className="font-read text-3xl leading-tight font-semibold sm:text-4xl">{article.title}</h1>
@@ -57,10 +84,28 @@ async function Reader({ params }: Pick<PageProps<"/read/[id]">, "params">) {
             Open original
           </a>
         </p>
+        <TagEditor
+          articleId={article.id}
+          initial={tags}
+          suggestions={(allTags ?? []).map((t) => t.name)}
+          add={addTag}
+          remove={removeTag}
+        />
       </header>
 
       {html ? (
-        <div className="reader" dangerouslySetInnerHTML={{ __html: html }} suppressHydrationWarning />
+        <>
+          <div id={BODY_ID} className="reader" dangerouslySetInnerHTML={{ __html: html }} suppressHydrationWarning />
+          <Highlighter
+            articleId={article.id}
+            targetId={BODY_ID}
+            initial={(highlights ?? []) as Highlight[]}
+            create={createHighlight}
+            updateNote={updateHighlightNote}
+            remove={deleteHighlight}
+          />
+          <ReadingProgress articleId={article.id} initialProgress={article.progress ?? 0} targetId={BODY_ID} save={saveProgress} />
+        </>
       ) : (
         <div className="grid justify-items-start gap-4 rounded-2xl border border-line bg-surface p-6">
           <p className="text-muted">
