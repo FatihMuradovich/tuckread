@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { getLocalProgressRaw, setLocalProgress } from "@/lib/progress-store";
 
 type Props = {
   articleId: string;
@@ -45,6 +46,7 @@ export function ReadingProgress({ articleId, initialProgress, targetId, save }: 
       const p = measure();
       current.current = p;
       setProgress(p);
+      setLocalProgress(articleId, p); // so the library shows it instantly, before the save lands
       if (timer.current) clearTimeout(timer.current);
       timer.current = setTimeout(flush, SAVE_DELAY_MS);
     };
@@ -52,8 +54,11 @@ export function ReadingProgress({ articleId, initialProgress, targetId, save }: 
     // Resume: jump to where the reader stopped last time (skip if they had barely started or finished).
     // (Not cancelled on cleanup: React may re-run this effect right away in development, after the
     // jump already happened, and the note should still appear.)
-    if (initialProgress > 0.03 && initialProgress < 0.97 && window.scrollY < 50) {
-      window.scrollTo({ top: initialProgress * distance() });
+    // Prefer this tab's latest value: the server's copy can lag a few seconds behind.
+    const local = getLocalProgressRaw(articleId);
+    const resumeAt = local != null ? Number(local) : initialProgress;
+    if (resumeAt > 0.03 && resumeAt < 0.97 && window.scrollY < 50) {
+      window.scrollTo({ top: resumeAt * distance() });
       requestAnimationFrame(() => setResumed(true));
     }
 

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
 import { AppHeader } from "@/components/AppHeader";
+import { ProgressLabel } from "@/components/library/ProgressLabel";
 import { requireUser } from "@/lib/auth";
 import { SaveForm } from "./SaveForm";
 
@@ -157,7 +158,7 @@ async function ArticleList({ searchParams }: Pick<PageProps<"/library">, "search
                   )}
                   <span>{a.site_name ?? hostname(a.url)}</span>
                   <span>{a.word_count > 0 ? `${a.reading_minutes} min` : "Link only"}</span>
-                  {progressLabel(a) && <span className="font-semibold text-primary">{progressLabel(a)}</span>}
+                  <ProgressLabel articleId={a.id} saved={a.progress} read={Boolean(a.read_at)} />
                   <span>{savedAgo(a.saved_at)}</span>
                   {a.tags.map((t) => (
                     <span key={t.id} className="rounded-md bg-primary/12 px-1.5 py-px font-semibold text-primary">
@@ -172,12 +173,6 @@ async function ArticleList({ searchParams }: Pick<PageProps<"/library">, "search
       )}
     </section>
   );
-}
-
-function progressLabel(a: Item) {
-  if (a.read_at) return "Read";
-  if (a.progress >= 0.03) return `${Math.round(a.progress * 100)}% read`;
-  return null;
 }
 
 function Chip({ href, active, children }: { href: string; active: boolean; children: React.ReactNode }) {
