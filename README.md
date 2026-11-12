@@ -127,11 +127,12 @@ Open [http://localhost:3000](http://localhost:3000), create an account, confirm 
 1. Go to `chrome://extensions` and turn on **Developer mode** (top right).
 2. Click **Load unpacked** and select the [`extension/`](extension) folder.
 3. Pin Tuckread from the puzzle-piece menu so its button stays in the toolbar.
-4. Sign in to Tuckread at `http://localhost:3000` in the same browser, open any article, and click the button.
+4. Sign in to Tuckread in the same browser, open any article, and click the button.
 
-The extension talks to `http://localhost:3000`. When you deploy, change `TUCKREAD_URL` in
-[`extension/config.js`](extension/config.js) and `host_permissions` in
-[`extension/manifest.json`](extension/manifest.json) to your domain.
+The **Saving to** menu at the bottom of the popup switches between the live site
+(`https://tuckread.vercel.app`, the default) and `http://localhost:3000` for development.
+To point it at another deployment, add it to `SERVERS` in [`extension/config.js`](extension/config.js)
+and to `host_permissions` in [`extension/manifest.json`](extension/manifest.json).
 
 ## Project structure
 

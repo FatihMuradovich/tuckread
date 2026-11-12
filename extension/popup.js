@@ -1,8 +1,30 @@
-import { MAX_HTML_LENGTH, TUCKREAD_URL } from "./config.js";
+import { MAX_HTML_LENGTH, SERVERS } from "./config.js";
 
 const el = (id) => document.getElementById(id);
 
-document.getElementById("library-link").href = `${TUCKREAD_URL}/library`;
+/** The Tuckread address chosen in the "Saving to" menu, remembered between clicks. */
+async function loadServer() {
+  let saved;
+  try {
+    ({ server: saved } = await chrome.storage.local.get("server"));
+  } catch {
+    // storage unavailable: use the default
+  }
+  return SERVERS.some((s) => s.url === saved) ? saved : SERVERS[0].url;
+}
+
+function setUpServerMenu(current) {
+  const select = el("server");
+  for (const s of SERVERS) select.add(new Option(s.label, s.url, false, s.url === current));
+  select.addEventListener("change", async () => {
+    await chrome.storage.local.set({ server: select.value });
+    location.reload(); // save again, this time to the newly chosen address
+  });
+}
+
+const TUCKREAD_URL = await loadServer();
+setUpServerMenu(TUCKREAD_URL);
+el("library-link").href = `${TUCKREAD_URL}/library`;
 
 /** Updates the popup. All text goes through textContent, never innerHTML. */
 function show(state, statusText, detail = "", button = null) {
