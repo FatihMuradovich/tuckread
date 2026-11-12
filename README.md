@@ -11,6 +11,10 @@
 </p>
 
 <p align="center">
+  <a href="https://tuckread.vercel.app"><strong>Try it live → tuckread.vercel.app</strong></a>
+</p>
+
+<p align="center">
   <img alt="Next.js 16" src="https://img.shields.io/badge/Next.js-16-18221C?logo=nextdotjs&logoColor=white">
   <img alt="React 19" src="https://img.shields.io/badge/React-19-2E4A3B?logo=react&logoColor=white">
   <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-strict-2E4A3B?logo=typescript&logoColor=white">
@@ -63,6 +67,7 @@ respects the reader: no ads, no tracking, and an export button that is always th
 | UI | React 19, Tailwind CSS 4, `next/font` (Bricolage Grotesque, Figtree, Literata) |
 | Auth and database | Supabase Auth and Postgres via `@supabase/ssr` |
 | Article parsing | `@mozilla/readability` on `jsdom`, cleaned with `sanitize-html` |
+| Hosting | Vercel (deploys on every push to `main`) |
 
 ### Security notes
 

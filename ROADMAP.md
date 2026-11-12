@@ -11,6 +11,7 @@ What's built and what comes next, in order. Tick items off as they ship.
 - [x] Library (unread and archive) and reading view
 - [x] Chrome extension: one-click save of the page as the reader sees it
 - [x] README with screenshots and setup steps
+- [x] Live on Vercel at https://tuckread.vercel.app; extension saves there by default (2026-11-12)
 
 ## Phase 1: Reading experience (~1 week)
 
@@ -23,7 +24,7 @@ The reading view is where people spend their time, so it comes first.
 
 ## Phase 2: Launch (~3–4 days)
 
-- [ ] Deploy to Vercel with a real address
+- [x] Deploy to Vercel with a real address
 - [ ] Import from Pocket and Instapaper export files
 - [ ] Export the whole library as Markdown or JSON
 - [ ] Publish the extension to the Chrome Web Store (needs the deployed address)
@@ -44,6 +45,7 @@ The reading view is where people spend their time, so it comes first.
 ## Later
 
 - [ ] GitHub Actions: lint and build on every pull request
+- [ ] Revisit pinned `jsdom` 26.1.0 and `sanitize-html` 2.17.0: newer versions pull in ES-module-only packages that crash on Vercel (`ERR_REQUIRE_ESM`). Only upgrade after testing a deploy.
 - [ ] Custom domain (tuckread.app / tuckread.com were free on 2026-11-11)
 - [ ] Custom SMTP for auth emails (Supabase's built-in sender has a low hourly limit)
 - [ ] Wikipedia infobox cleanup in the reading view
