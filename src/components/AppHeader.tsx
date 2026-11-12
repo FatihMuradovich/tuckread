@@ -8,11 +8,19 @@ export function AppHeader() {
         <Link href="/library" aria-label="Tuckread library">
           <Logo />
         </Link>
-        <form action="/auth/signout" method="post">
-          <button type="submit" className="rounded-full px-3 py-1.5 text-sm text-muted transition hover:bg-surface hover:text-ink">
-            Sign out
-          </button>
-        </form>
+        <nav className="flex items-center gap-1 text-sm" aria-label="Main">
+          <Link href="/library" className="rounded-full px-3 py-1.5 text-muted transition hover:bg-surface hover:text-ink">
+            Library
+          </Link>
+          <Link href="/highlights" className="rounded-full px-3 py-1.5 text-muted transition hover:bg-surface hover:text-ink">
+            Highlights
+          </Link>
+          <form action="/auth/signout" method="post">
+            <button type="submit" className="rounded-full px-3 py-1.5 text-muted transition hover:bg-surface hover:text-ink">
+              Sign out
+            </button>
+          </form>
+        </nav>
       </div>
     </header>
   );

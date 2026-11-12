@@ -14,7 +14,7 @@
 }
 
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
+  :root:not([data-theme="light"]):not([data-theme="sepia"]) {
     --tr-bg: #121814;
     --tr-surface: #1c2620;
     --tr-ink: #e4eae4;
@@ -35,6 +35,19 @@
   --tr-primary: #9cc5ae;
   --tr-on-primary: #121814;
   color-scheme: dark;
+}
+
+/* Sepia: warm paper for long evening reads, chosen in the reader settings */
+:root[data-theme="sepia"] {
+  --tr-bg: #f3ead7;
+  --tr-surface: #faf4e6;
+  --tr-ink: #3a2e1f;
+  --tr-muted: #7b6a52;
+  --tr-line: rgba(58, 46, 31, 0.12);
+  --tr-primary: #2e4a3b;
+  --tr-on-primary: #f3ead7;
+  --tr-highlight: rgba(232, 163, 61, 0.45);
+  color-scheme: light;
 }
 
 @theme inline {
@@ -96,6 +109,30 @@ h3 {
 .reader th, .reader td { border: 1px solid var(--tr-line); padding: 0.4em 0.7em; }
 .reader hr { border: 0; border-top: 1px solid var(--tr-line); }
 .reader mark { background: var(--tr-highlight); color: inherit; }
+
+/* Reader settings, set on <html> by the inline script in layout.tsx and by ReaderSettings */
+:root[data-reader-size="s"] .reader { font-size: 1rem; }
+:root[data-reader-size="l"] .reader { font-size: 1.25rem; }
+:root[data-reader-size="xl"] .reader { font-size: 1.4rem; }
+:root[data-reader-width="narrow"] .reader { max-width: 54ch; }
+:root[data-reader-width="wide"] .reader { max-width: 78ch; }
+
+/* Highlights drawn by Highlighter.tsx */
+.reader mark.tr-hl {
+  background: var(--tr-highlight);
+  border-radius: 2px;
+  padding: 0.05em 0;
+  cursor: pointer;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+.reader mark.tr-hl[data-has-note="true"] {
+  border-bottom: 2px dotted var(--tr-accent);
+}
+.reader mark.tr-hl:hover,
+.reader mark.tr-hl[data-active="true"] {
+  background: color-mix(in srgb, var(--tr-accent) 60%, transparent);
+}
 
 :focus-visible {
   outline: 2px solid var(--tr-primary);

@@ -17,10 +17,12 @@ What's built and what comes next, in order. Tick items off as they ship.
 
 The reading view is where people spend their time, so it comes first.
 
-- [ ] Highlights and notes: select text to highlight, add a note, see all highlights on one page (`highlights` table exists)
-- [ ] Reader settings: font size, line width, light / dark / sepia theme
-- [ ] Reading progress: remember where you stopped, progress bar, mark as read automatically
-- [ ] Tags and search: tag articles, full-text search across the library (`tags` and `article_tags` tables exist)
+- [x] Highlights and notes: select text to highlight, add a note, see all highlights on one page
+- [x] Reader settings: font size, line width, light / dark / sepia theme
+- [x] Reading progress: remember where you stopped, progress bar, mark as read automatically
+- [x] Tags and search: tag articles, full-text search across the library
+
+Needs migration `20261112120000_reading_experience.sql` run in Supabase before deploying.
 
 ## Phase 2: Launch (~3–4 days)
 
