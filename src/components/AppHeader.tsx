@@ -15,11 +15,9 @@ export function AppHeader() {
           <Link href="/highlights" className="rounded-full px-3 py-1.5 text-muted transition hover:bg-surface hover:text-ink">
             Highlights
           </Link>
-          <form action="/auth/signout" method="post">
-            <button type="submit" className="rounded-full px-3 py-1.5 text-muted transition hover:bg-surface hover:text-ink">
-              Sign out
-            </button>
-          </form>
+          <Link href="/settings" className="rounded-full px-3 py-1.5 text-muted transition hover:bg-surface hover:text-ink">
+            Settings
+          </Link>
         </nav>
       </div>
     </header>

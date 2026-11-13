@@ -52,6 +52,10 @@ respects the reader: no ads, no tracking, and an export button that is always th
   that spot, and articles you finish are marked as read.
 - **Tags and search.** Tag articles and filter by tag. Full-text search covers titles, sites and the article text.
 - **Library and archive.** Unread articles up top; archive them when you are done, or delete them.
+- **Import.** Bring a Pocket (CSV or HTML), Instapaper (CSV) or browser bookmarks file. It's parsed in the browser,
+  previewed, then saved in batches; articles already in the library are skipped.
+- **Export and delete.** Download the whole library with tags, highlights and notes as Markdown, JSON or a
+  Pocket-compatible CSV. Delete the account and all its data from Settings.
 - **Graceful fallback.** Sites that block reading apps (Medium, for example) are saved as link-only
   bookmarks with a title derived from the URL, instead of failing.
 - **Accounts.** Email and password sign-up with email confirmation.
@@ -60,8 +64,8 @@ respects the reader: no ads, no tracking, and an export button that is always th
 
 - [x] Browser extension that saves the page as you see it, including sites that block servers
 - [ ] Publish the extension to the Chrome Web Store
-- [ ] Import from Pocket and Instapaper export files
-- [ ] Export your whole library as Markdown or JSON
+- [x] Import from Pocket and Instapaper export files
+- [x] Export your whole library as Markdown, JSON or CSV
 - [ ] Three-sentence AI summaries
 - [x] Highlights and notes in the reading view
 - [x] Tags and search
@@ -157,12 +161,17 @@ src/
 │   ├── api/save/             Save endpoint used by the browser extension
 │   ├── library/              Library list with search and tag filters, save form, article actions
 │   ├── highlights/           All highlights, grouped by article
+│   ├── settings/             Import, export, sign out, delete account
+│   ├── privacy/              Privacy policy
+│   ├── api/export/           Library download (Markdown, JSON, CSV)
 │   └── read/                 Reading view and its actions (progress, highlights, tags)
 ├── components/reader/        Reader settings, progress bar, highlighter, tag editor
 ├── components/               Logo and app header
 ├── lib/
 │   ├── articles/             Fetching, parsing, sanitizing and saving articles
 │   ├── highlights/anchor.ts  Finding a highlight's text again (quote + context matching)
+│   ├── import/parse.ts       Pocket, Instapaper and bookmark file parsers
+│   ├── export/format.ts      Markdown, JSON and CSV exporters
 │   ├── supabase/             Browser, server and proxy clients
 │   └── auth.ts               requireUser() helper used by every private page and action
 └── proxy.ts                  Session refresh and route protection

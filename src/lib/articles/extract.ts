@@ -47,6 +47,10 @@ const MAX_REDIRECTS = 5;
 const TIMEOUT_MS = 10_000;
 const WORDS_PER_MINUTE = 230;
 
+/** Query parameters that only track clicks or campaigns (Google/Microsoft/Meta ads, analytics, newsletters). */
+const TRACKING_PARAM =
+  /^(utm_|gad_|mc_|pk_|hsa_|oly_|vero_|_hs|fbclid$|gclid$|gclsrc$|dclid$|gbraid$|wbraid$|msclkid$|yclid$|twclid$|ttclid$|igshid$|li_fat_id$|srsltid$|mkt_tok$|_ga$|_gl$|ref_src$)/i;
+
 /** Turns what the user typed into a URL, adding https:// when it is missing. */
 export function parseUserUrl(raw: string): URL {
   const text = raw.trim();
@@ -64,9 +68,9 @@ export function parseUserUrl(raw: string): URL {
     throw new SaveError("That doesn't look like a link. Check it and try again.");
   }
   url.hash = "";
-  // Drop campaign tracking so the same article isn't saved twice under different links.
+  // Drop ad and campaign tracking so the same article isn't saved twice under different links.
   for (const key of [...url.searchParams.keys()]) {
-    if (/^(utm_|fbclid$|gclid$|mc_cid$|mc_eid$)/i.test(key)) url.searchParams.delete(key);
+    if (TRACKING_PARAM.test(key)) url.searchParams.delete(key);
   }
   return url;
 }

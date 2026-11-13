@@ -1,5 +1,12 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { extractArticle, parseArticleHtml, SaveError, titleFromUrl, type ExtractedArticle } from "./extract";
+import {
+  extractArticle,
+  parseArticleHtml,
+  parseUserUrl,
+  SaveError,
+  titleFromUrl,
+  type ExtractedArticle,
+} from "./extract";
 
 export const MAX_CAPTURED_HTML = 5 * 1024 * 1024;
 
@@ -29,15 +36,26 @@ export async function saveArticleForUser(
 ): Promise<SaveResult> {
   const url = input.url.toString();
 
-  const { data: existing, error: lookupError } = await supabase
+  // Same page already saved? Compare against links cleaned with today's rules, since older saves
+  // may still carry tracking parameters we now strip. Candidates share the origin and path.
+  const base = `${input.url.origin}${input.url.pathname}`.replace(/[\\%_]/g, (c) => `\\${c}`);
+  const { data: candidates, error: lookupError } = await supabase
     .from("articles")
-    .select("id, title, word_count")
-    .eq("url", url)
-    .maybeSingle();
+    .select("id, title, word_count, url")
+    .like("url", `${base}%`)
+    .limit(50);
   if (lookupError) {
     console.error("save lookup failed", lookupError);
     return { status: "error", message: "Saving failed. Try again in a moment." };
   }
+  const existing =
+    (candidates ?? []).find((c) => {
+      try {
+        return parseUserUrl(c.url).toString() === url;
+      } catch {
+        return c.url === url;
+      }
+    }) ?? null;
 
   // Already saved with its text: nothing to do. Saved as link-only: only worth redoing if we now have HTML.
   if (existing && (existing.word_count > 0 || !input.html)) {
