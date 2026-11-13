@@ -10,9 +10,11 @@ import { TagEditor } from "@/components/reader/TagEditor";
 import { requireUser } from "@/lib/auth";
 import { sanitizeArticleHtml } from "@/lib/articles/sanitize";
 import { deleteArticle, setArchived } from "@/app/library/actions";
+import { FetchTextButton } from "@/components/reader/FetchTextButton";
 import {
   addTag,
   createHighlight,
+  fetchArticleText,
   deleteHighlight,
   removeTag,
   saveProgress,
@@ -109,16 +111,20 @@ async function Reader({ params }: Pick<PageProps<"/read/[id]">, "params">) {
       ) : (
         <div className="grid justify-items-start gap-4 rounded-2xl border border-line bg-surface p-6">
           <p className="text-muted">
-            This site doesn&apos;t let reading apps fetch its text, so Tuckread kept the link for you.
+            Tuckread has the link to this article but not its text yet. It may have been imported, or the site may
+            block reading apps. Try fetching it, or open the page and click the Tuckread browser button.
           </p>
-          <a
-            href={article.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="rounded-full bg-primary px-5 py-2.5 font-semibold text-on-primary hover:opacity-90"
-          >
-            Read on {article.site_name ?? "the original site"}
-          </a>
+          <div className="flex flex-wrap items-start gap-3">
+            <a
+              href={article.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="rounded-full bg-primary px-5 py-2.5 font-semibold text-on-primary hover:opacity-90"
+            >
+              Read on {article.site_name ?? "the original site"}
+            </a>
+            <FetchTextButton articleId={article.id} fetchText={fetchArticleText} />
+          </div>
         </div>
       )}
 

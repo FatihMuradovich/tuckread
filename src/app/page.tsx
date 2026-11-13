@@ -166,6 +166,12 @@ export default function Home() {
                 Bring the export file from Pocket or Instapaper and pick up where you left off, with your
                 tags and saved dates in place.
               </p>
+              <Link
+                href="/settings#import"
+                className="mt-2 justify-self-start rounded-full bg-accent px-5 py-2.5 font-semibold text-moss hover:opacity-90"
+              >
+                Import your Pocket file
+              </Link>
             </div>
             <ol className="grid gap-3 text-paper/90">
               {["Upload your export file", "We bring in your articles and tags", "Keep reading"].map((step, i) => (
@@ -184,7 +190,12 @@ export default function Home() {
       <footer className="border-t border-line">
         <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-6 text-sm text-muted sm:px-6">
           <Logo className="scale-90 origin-left" />
-          <span>Built in the open as a portfolio project.</span>
+          <span className="flex flex-wrap gap-x-4 gap-y-1">
+            <span>Built in the open as a portfolio project.</span>
+            <Link href="/privacy" className="underline underline-offset-2 hover:text-ink">
+              Privacy
+            </Link>
+          </span>
         </div>
       </footer>
     </div>

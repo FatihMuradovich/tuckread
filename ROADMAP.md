@@ -22,13 +22,14 @@ The reading view is where people spend their time, so it comes first.
 - [x] Reading progress: remember where you stopped, progress bar, mark as read automatically
 - [x] Tags and search: tag articles, full-text search across the library
 
-Needs migration `20261112120000_reading_experience.sql` run in Supabase before deploying.
+Migration `20261112120000_reading_experience.sql` was run on production on 2026-11-12.
 
 ## Phase 2: Launch (~3–4 days)
 
 - [x] Deploy to Vercel with a real address
-- [ ] Import from Pocket and Instapaper export files
-- [ ] Export the whole library as Markdown or JSON
+- [x] Import from Pocket and Instapaper export files (and browser bookmarks); "Fetch the article text" for link-only articles
+- [x] Export the whole library as Markdown, JSON or Pocket-compatible CSV
+- [x] Settings page with account deletion, and a privacy policy page (needed for the Web Store)
 - [ ] Publish the extension to the Chrome Web Store (needs the deployed address)
 
 ## Phase 3: Smart features (~1 week)

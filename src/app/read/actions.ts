@@ -1,6 +1,7 @@
 "use server";
 
 import { requireUser } from "@/lib/auth";
+import { extractArticle, parseUserUrl, SaveError } from "@/lib/articles/extract";
 
 // Server Actions used by the reading view. Every action re-checks the user; Row Level Security
 // additionally guarantees a user can only touch their own articles, highlights and tags.
@@ -10,6 +11,46 @@ const READ_THRESHOLD = 0.95;
 
 function assertId(id: unknown): asserts id is string {
   if (typeof id !== "string" || !UUID.test(id)) throw new Error("Invalid id");
+}
+
+// ---------- Fetch text for a link-only article ----------
+
+/** Tries to download and extract the article text for a link-only article (e.g. one just imported). */
+export async function fetchArticleText(articleId: string): Promise<{ ok: true } | { error: string }> {
+  assertId(articleId);
+  const { supabase } = await requireUser();
+  const { data: article } = await supabase.from("articles").select("url").eq("id", articleId).maybeSingle();
+  if (!article) return { error: "Article not found." };
+
+  try {
+    const parsed = await extractArticle(parseUserUrl(article.url));
+    if (!parsed.contentHtml) {
+      return { error: "This page doesn't have a readable article. Open it on the original site." };
+    }
+    const { error } = await supabase
+      .from("articles")
+      .update({
+        title: parsed.title,
+        site_name: parsed.siteName,
+        byline: parsed.byline,
+        excerpt: parsed.excerpt,
+        content_html: parsed.contentHtml,
+        word_count: parsed.wordCount,
+        reading_minutes: parsed.readingMinutes,
+      })
+      .eq("id", articleId);
+    return error ? { error: "Couldn't save the text. Try again." } : { ok: true };
+  } catch (e) {
+    if (e instanceof SaveError) {
+      return {
+        error: e.linkOnly
+          ? `${e.message} Try the Tuckread browser button on the page instead.`
+          : e.message,
+      };
+    }
+    console.error("fetchArticleText failed", e);
+    return { error: "We couldn't read that page. Try again later." };
+  }
 }
 
 // ---------- Reading progress ----------
